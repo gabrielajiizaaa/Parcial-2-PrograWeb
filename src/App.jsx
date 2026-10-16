@@ -1,121 +1,81 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [productos, setProductos] = useState([
+    { id: 1, nombre: 'Laptop', categoria: 'Tecnología', precio: 5500, stock: 10 },
+    { id: 2, nombre: 'Mouse', categoria: 'Tecnología', precio: 80, stock: 50 },
+    { id: 3, nombre: 'Silla', categoria: 'Muebles', precio: 650, stock: 15 },
+  ])
+  const [form, setForm] = useState({ nombre: '', categoria: '', precio: '', stock: '' })
+  const [busqueda, setBusqueda] = useState('')
+
+  const cambiar = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+
+  const registrar = (e) => {
+    e.preventDefault()
+    if (!form.nombre || !form.categoria || !form.precio || !form.stock) return
+    setProductos([
+      ...productos,
+      { id: Date.now(), nombre: form.nombre, categoria: form.categoria, precio: Number(form.precio), stock: Number(form.stock) },
+    ])
+    setForm({ nombre: '', categoria: '', precio: '', stock: '' })
+  }
+
+  const eliminar = (id) => setProductos(productos.filter((p) => p.id !== id))
+
+  const filtrados = productos.filter(
+    (p) =>
+      p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      p.categoria.toLowerCase().includes(busqueda.toLowerCase())
+  )
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="contenedor">
+      <h1>Registro de Productos</h1>
 
-      <div className="ticks"></div>
+      <form onSubmit={registrar} className="formulario">
+        <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={cambiar} />
+        <input name="categoria" placeholder="Categoría" value={form.categoria} onChange={cambiar} />
+        <input name="precio" type="number" min="0" step="0.01" placeholder="Precio" value={form.precio} onChange={cambiar} />
+        <input name="stock" type="number" min="0" placeholder="Stock" value={form.stock} onChange={cambiar} />
+        <button type="submit">Registrar</button>
+      </form>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      <input
+        className="buscador"
+        placeholder="Buscar por nombre o categoría..."
+        value={busqueda}
+        onChange={(e) => setBusqueda(e.target.value)}
+      />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtrados.map((p) => (
+            <tr key={p.id}>
+              <td>{p.nombre}</td>
+              <td>{p.categoria}</td>
+              <td>Q {p.precio.toFixed(2)}</td>
+              <td>{p.stock}</td>
+              <td>
+                <button onClick={() => eliminar(p.id)}>Eliminar</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {filtrados.length === 0 && <p>No se encontraron productos.</p>}
+    </div>
   )
 }
 
