@@ -47,3 +47,21 @@ th, td {
 th {
   background: #f3f4f6;
 }
+
+.menu {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.menu a {
+  padding: 10px 0;
+  cursor: pointer;
+  color: #555;
+}
+
+.menu a.activo {
+  color: #2563eb;
+  border-bottom: 2px solid #2563eb;
+}
